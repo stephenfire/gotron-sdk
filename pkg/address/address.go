@@ -33,7 +33,7 @@ func (a Address) Bytes() []byte {
 
 // Hex get bytes from address in string
 func (a Address) Hex() string {
-	return common.ToHex(a[:])
+	return common.BytesToHexString(a[:])
 }
 
 // BigToAddress returns Address with byte values of b.
@@ -70,6 +70,16 @@ func Base64ToAddress(s string) (Address, error) {
 		return nil, err
 	}
 	return Address(decoded), nil
+}
+
+func (a Address) IsValid() bool {
+	if len(a) != AddressLength {
+		return false
+	}
+	if a[0] != TronBytePrefix {
+		return false
+	}
+	return true
 }
 
 // String implements fmt.Stringer.

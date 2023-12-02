@@ -2,7 +2,6 @@ package common
 
 import (
 	"encoding/hex"
-	"strings"
 )
 
 var (
@@ -19,9 +18,10 @@ func (h *hexError) Error() string {
 
 // BytesToHexString encodes bytes as a hex string.
 func BytesToHexString(bytes []byte) string {
-	encode := make([]byte, len(bytes)*2)
-	hex.Encode(encode, bytes)
-	return "0x" + string(encode)
+	encode := make([]byte, len(bytes)*2+2)
+	hex.Encode(encode[2:], bytes)
+	copy(encode, "0x")
+	return string(encode)
 }
 
 // HexStringToBytes hex string as bytes
@@ -29,8 +29,10 @@ func HexStringToBytes(input string) ([]byte, error) {
 	if len(input) == 0 {
 		return nil, EmptyString
 	}
-
-	return hex.DecodeString(strings.Replace(input, "0x", "", -1))
+	if Has0xPrefix(input) {
+		return hex.DecodeString(input[2:])
+	}
+	return hex.DecodeString(input)
 }
 
 // ToHex returns the hex representation of b, prefixed with '0x'.
@@ -38,11 +40,12 @@ func HexStringToBytes(input string) ([]byte, error) {
 //
 // Deprecated: use BytesToHexString instead.
 func ToHex(b []byte) string {
-	hex := Bytes2Hex(b)
-	if len(hex) == 0 {
-		hex = "0"
-	}
-	return "0x" + hex
+	return BytesToHexString(b)
+	// hex := Bytes2Hex(b)
+	// if len(hex) == 0 {
+	// 	hex = "0"
+	// }
+	// return "0x" + hex
 }
 
 // ToHexArray creates a array of hex-string based on []byte
