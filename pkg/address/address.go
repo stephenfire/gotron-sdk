@@ -94,6 +94,17 @@ func (a Address) String() string {
 	return common.EncodeCheck(a.Bytes())
 }
 
+func BytesToAddress(bs []byte) Address {
+	addr := make([]byte, AddressLength, AddressLength)
+	if len(bs) > AddressLength {
+		copy(addr, bs[len(bs)-AddressLength:])
+	} else {
+		copy(addr[AddressLength-len(bs):], bs)
+	}
+	addr[0] = TronBytePrefix
+	return addr
+}
+
 // PubkeyToAddress returns address from ecdsa public key
 func PubkeyToAddress(p ecdsa.PublicKey) Address {
 	address := crypto.PubkeyToAddress(p)
