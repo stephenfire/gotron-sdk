@@ -72,6 +72,17 @@ func Base64ToAddress(s string) (Address, error) {
 	return Address(decoded), nil
 }
 
+func EthAddressToAddress(ethAddr []byte) Address {
+	addr := make([]byte, AddressLength, AddressLength)
+	if len(ethAddr) > AddressLength-1 {
+		copy(addr[1:], ethAddr[len(ethAddr)-(AddressLength-1):])
+	} else {
+		copy(addr[AddressLength-len(ethAddr):], ethAddr)
+	}
+	addr[0] = TronBytePrefix
+	return addr
+}
+
 func (a Address) IsValid() bool {
 	if len(a) != AddressLength {
 		return false
